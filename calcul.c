@@ -48,11 +48,11 @@ int easy(){
 int medium(){
     char ope[3] = {'+', '-', '*'};
     int result;
-    time_t t;
+    time_t t;  //pourquoi ne pas utiliser srand(time(NULL))
     srand((unsigned) time(&t));
 
-    int op = rand() % 3;
-    int op1 = rand() % 101;
+    int op = rand() % 3; // entre 0 et 2
+    int op1 = rand() % 101; // entre 0 et 100
     int op2;
     switch (op){
     case 0:
@@ -99,6 +99,7 @@ int hard(){
         break;
 
     case 1:
+        op2 = rand() % 101;
         if (op1 > op2){
             printf("%d %c %d = ?\n", op1, ope[op], op2);
             result = op1 - op2;
@@ -110,15 +111,16 @@ int hard(){
         break;
 
     case 2:
-        op2 = rand() % 11;
+        op2 = rand() % 11; // entre 0 et 10 
         printf("%d %c %d = ?\n", op1, ope[op], op2);
         result = op1 * op2;
         break;
 
     case 3:
-        op2 = rand() % 10 + 1;
-        while(op1 % op2 != 0){
-            op1 = rand() % 101 + 1;
+        op2 = rand() % 10 + 1; // entre 1 et 10
+        while(op1 % op2 != 0){ 
+            /* pour avoir une division entiere */
+            op1 = rand() % 101 ; // entre 0 et 100 
             op2 = rand() % 10 + 1;
         }
         printf("%d %c %d = ?\n", op1, ope[op], op2);
@@ -153,7 +155,7 @@ void comment(int n){
 int note(int choix){
     int mark=0;
     int result, answer; 
-
+// On peut préciser que l'enfant aura 20 calculs a faire
     for (int i = 0; i < 20; i++){
         printf("%d . ", i+1);
         switch (choix)
@@ -184,7 +186,7 @@ int note(int choix){
         }
         else{
             printf("Faux \n");
-            printf("Résultat = %d \n", result);
+            printf("Resultat = %d \n", result);
         }   
     }
     return (mark);
