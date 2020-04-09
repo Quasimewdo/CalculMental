@@ -10,8 +10,8 @@ int niveau(){
     printf("Niveau medium : taper 2\n");
     printf("Niveau difficile : taper 3\n");
     printf("Votre choix : ");
-    int n;
-    scanf("%d", &n);
+    char n;
+    scanf("%c", &n);
     printf("*******************************************************\n");
     return (n);
 }
@@ -152,7 +152,7 @@ void comment(int n){
     printf("************************************\n");
 }
 
-int note(int choix){
+int note(char choix){
     int mark=0;
     int result, answer; 
 // On peut préciser que l'enfant aura 20 calculs a faire
@@ -160,22 +160,22 @@ int note(int choix){
         printf("%d . ", i+1);
         switch (choix)
         {
-        case 1:
+        case '1':
             result = easy();
             break;
 
-        case 2:
+        case '2':
             result = medium();
             break;
 
-        case 3:
+        case '3':
             result = hard();
             break;
         
         default:
             printf("Erreur : Veuillez taper 1, 2 ou 3\n");
             printf("Votre choix : ");
-            scanf("%d", &choix);
+            scanf("%c", &choix);
             printf("*******************************************************\n");
             return (note(choix));
         }
