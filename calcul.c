@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-int niveau(){
+char niveau(){
     //Pour choisir le niveau de difficulté
     printf("\n*******************************************************\n");
     printf("         Veuillez choisir votre niveau du jeu          \n");
@@ -11,8 +11,8 @@ int niveau(){
     printf("Niveau medium : taper 2\n");
     printf("Niveau difficile : taper 3\n");
     printf("Votre choix : ");
-    int n;
-    scanf("%d", &n);
+    char n;
+    scanf("%c", &n);
     printf("*******************************************************\n");
     printf("            Vous avez 20 calculs à effectuer           \n");
     return (n);
@@ -198,7 +198,7 @@ void comment(int n){
     printf("\n");
 }
 
-int note(int choix){
+int note(char choix){
     //Compte et mettre à jour la note du jeu
     int mark=0;
     int result, answer; 
@@ -207,22 +207,22 @@ int note(int choix){
         printf("%d . ", i+1);
         switch (choix)
         {
-        case 1:
+        case '1':
             result = easy();
             break;
 
-        case 2:
+        case '2':
             result = medium();
             break;
 
-        case 3:
+        case '3':
             result = hard();
             break;
         
         default:
             printf("Erreur : Veuillez taper 1, 2 ou 3\n");
             printf("Votre choix : ");
-            scanf("%d", &choix);
+            scanf("%c", &choix);
             printf("*******************************************************\n");
             return (note(choix));
         }
