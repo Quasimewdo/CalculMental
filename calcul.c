@@ -13,6 +13,7 @@ int niveau(){
     int n;
     scanf("%d", &n);
     printf("*******************************************************\n");
+    printf("            Vous avez 20 calculs à effectuer           \n");
     return (n);
 }
 
@@ -51,9 +52,9 @@ int medium(){
     time_t t;
     srand((unsigned) time(&t));
 
-    int op1 = rand() % 3;
-    int op2 = rand() % 3;
-    int val1 = rand() % 101;
+    int op1 = rand() % 3; // entre 0 et 2
+    int op2 = rand() % 3; // entre 0 et 2
+    int val1 = rand() % 101; // entre 0 et 100
     int val2;
     int val3;
     if (op2 != 2){
@@ -154,7 +155,8 @@ int hard(){
     case 3:
         op2 = rand() % 10 + 1;
         while(op1 % op2 != 0){
-            op1 = rand() % 101 + 1;
+            /* pour avoir une division entiere */
+            op1 = rand() % 101 + 1; // entre 0 et 100
             op2 = rand() % 10 + 1;
         }
         printf("%d %c %d = ?\n", op1, ope[op], op2);
