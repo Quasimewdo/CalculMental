@@ -4,6 +4,7 @@
 #include <math.h>
 
 int niveau(){
+    //Pour choisir le niveau de difficulté
     printf("\n*******************************************************\n");
     printf("         Veuillez choisir votre niveau du jeu          \n");
     printf("Niveau facile : taper 1\n");
@@ -18,6 +19,7 @@ int niveau(){
 }
 
 int easy(){
+    //Mode easy: une addition ou soustraction entre deux valeurs compris entre 0 et 100
     char ope[2] = {'+', '-'};
     int result;
     time_t t;
@@ -33,6 +35,7 @@ int easy(){
         break;
 
     case 1:
+    //Valeur de soustraction ne peut pas être négatif
         if (op1 > op2){
             printf("%d %c %d = ?\n", op1, ope[op], op2);
             result = op1 - op2;
@@ -47,6 +50,8 @@ int easy(){
 }
 
 int medium(){
+    //Mode Medium: composition de deux opérations (+, -, *) entre trois valeurs 
+    //Multiplication entre une valeur compris entre O et 1000 et une valeur 0 et 10
     char ope[3] = {'+', '-', '*'};
     int result;
     time_t t;
@@ -125,6 +130,9 @@ int medium(){
 }
 
 int hard(){
+    //Mode Hard: composition de deux opérations (+, -, *, /) entre trois valeurs 
+    //Multiplication entre une valeur compris entre O et 1000 et une valeur 0 et 10
+    //Division est entière
     char ope[4] = {'+', '-', '*', '/'};
     int result;
     time_t t;
@@ -168,6 +176,7 @@ int hard(){
 
 
 void comment(int n){
+    //Donner l'appréciation selon la note obtenue
     printf("*******************************************************\n*                      %2d / 20                        *\n", n);
     if (n < 6)
         printf("*             Appréciation : Très Faible              *\n");
@@ -190,6 +199,7 @@ void comment(int n){
 }
 
 int note(int choix){
+    //Compte et mettre à jour la note du jeu
     int mark=0;
     int result, answer; 
 
