@@ -146,7 +146,7 @@ int hard(){
         switch (op1){
             case 0:
                 val2 = rand() % 101;
-                print("%d %c %d ",val1,ope[op1],val2);
+                printf("%d %c %d ",val1,ope[op1],val2);
                 result = val1 + val2;
                 break;
 
@@ -166,10 +166,10 @@ int hard(){
                 val2 = rand() % 10 + 1;
                 while(val1 % val2 != 0){
                     val1 = rand() % 100 + 1;
-                    val2 = rand( % 10 + 1;
+                    val2 = rand() % 10 + 1;
                 }
                 printf("(%d %c %d) ",val1,ope[op1],val2);
-                result = roudf(val1/val2);
+                result = roundf(val1/val2);
                 break;
             }
         switch(op2){
@@ -192,17 +192,17 @@ int hard(){
         switch(op3){
             case 0:
                 val4 = rand() % 101;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result + val4;
                 break;
             case 1:
                 val4 = rand() % 101;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result - val4;
                 break;
             case 2:
                 val4 = rand() % 11;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result * val4;
                 break;
         }
@@ -251,17 +251,17 @@ int hard(){
         switch(op3){
             case 0:
                 val4 = rand() % 101;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result + val4;
                 break;
             case 1:
                 val4 = rand() % 101;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result - val4;
                 break;
             case 2:
                 val4 = rand() % 11;
-                printf("%c %d",ope[op3],val4);
+                printf("%c %d = ?\n",ope[op3],val4);
                 result = result * val4;
                 break;
         }
@@ -271,7 +271,7 @@ int hard(){
         switch (op1){
             case 0:
                 val2 = rand() % 101;
-                print("%d %c %d ",val1,ope[op1],val2);
+                printf("%d %c %d ",val1,ope[op1],val2);
                 result = val1 + val2;
                 break;
 
@@ -296,7 +296,7 @@ int hard(){
                     val2 = rand() % 100 + 1;
                     val3 = rand() % 10 + 1;
                 }
-                printf("(%d / %d) ",val2,val3);
+                printf("(%d / %d) = ?\n ",val2,val3);
                 val2 = roundf(val2 / val3);
                 result = result + val2;
                 break;
@@ -309,7 +309,7 @@ int hard(){
                     val2 = rand() % 100 + 1;
                     val3 = rand() % 10 + 1;
                 }
-                printf("(%d / %d) ",val2,val3);
+                printf("(%d / %d) = ?\n ",val2,val3);
                 val2 = roundf(val2 / val3);
                 result = result + val2;
                 break;
@@ -322,14 +322,16 @@ int hard(){
                     val2 = rand() % 100 + 1;
                     val3 = rand() % 10 + 1;
                 }
-                printf("(%d / %d) ",val2,val3);
+                printf("(%d / %d) = ?\n ",val2,val3);
                 val2 = roundf(val2 / val3);
                 result = result + val2;
                 break;
                 
         } 
     }
+    return result;
 }
+
 
 
 void comment(int n){
