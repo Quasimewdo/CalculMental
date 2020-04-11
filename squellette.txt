@@ -1,0 +1,8 @@
+Fonctions crées:
+- easy() --> calculs facile
+- medium() --> calculs moyen
+- hard() --> calculs durs
+- niveau() --> choix du niveau
+- comment() --> appreciation selon la note
+- note() 
+- main();

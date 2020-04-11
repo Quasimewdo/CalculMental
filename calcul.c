@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#define TOTALE 20
+#define TOTALE 5
 
 char niveau(){
     //Pour choisir le niveau de difficulté
@@ -15,7 +15,7 @@ char niveau(){
     char n;
     scanf("%c", &n);
     printf("*******************************************************\n");
-    printf("            Vous avez 20 calculs à effectuer           \n");
+    printf("            Vous avez %2d calculs a effectuer           \n",TOTALE);
     return (n);
 }
 
@@ -51,8 +51,8 @@ int easy(){
 }
 
 int medium(){
-    //Mode Medium: composition de deux opérations (+, -, *) entre trois valeurs 
-    //Multiplication entre une valeur compris entre O et 1000 et une valeur 0 et 10
+    //Mode Medium: composition deux opérateurs (+, -, *) et trois valeurs 
+    //Multiplication entre une valeur compris entre O et 100 et une valeur 0 et 10
     char ope[3] = {'+', '-', '*'};
     int result;
     time_t t;
@@ -95,12 +95,6 @@ int medium(){
             printf("- %d = ?\n", val3);
             result = result - val3;
             break;
-
-        case 2:
-            val3 = rand() % 11;
-            printf("* %d = ?\n", val3);
-            result = result * val3;
-            break;
         }
     }
     else{
@@ -131,48 +125,210 @@ int medium(){
 }
 
 int hard(){
-    //Mode Hard: composition de deux opérations (+, -, *, /) entre trois valeurs 
-    //Multiplication entre une valeur compris entre O et 1000 et une valeur 0 et 10
-    //Division est entière
-    char ope[4] = {'+', '-', '*', '/'};
+    /* Mode Hard : composition de 3 operateurs choist parmi (+ - * /) et 4 valeurs
+    Obligation d'une division entiere entre valeurs 1 et 100
+    Multiplication de valeurs comprises entre 0 et 100*/
+    char ope[4] = {'+','-','*','/'};
     int result;
     time_t t;
     srand((unsigned) time(&t));
 
-    int op = rand() % 4;
-    int op1 = rand() % 101;
-    int op2;
-    switch (op){
-    case 0:
-        op2 = rand() % 101;
-        printf("%d %c %d = ?\n", op1, ope[op], op2);
-        result = op1 + op2;
-        break;
+    int op1 = rand() % 4;
+    int op2 = rand() % 4;
+    int op3 = rand() % 4;
+    /*opfictif aide a savoir quel operateur doit etre avant la div*/
+    int opfictif = rand() % 3;
+    int val1 = rand() % 101; //val entre 1 et 100
+    int val2;
+    int val3;
+    int val4;
+    if(op3 != 3 && op2 != 3){
+        switch (op1){
+            case 0:
+                val2 = rand() % 101;
+                print("%d %c %d ",val1,ope[op1],val2);
+                result = val1 + val2;
+                break;
 
-    case 1:
-        op2 = rand() % 101;
-        printf("%d %c %d = ?\n", op1, ope[op], op2);
-        result = op1 - op2;
-        break;
+            case 1:
+                val2 = rand() % 101;
+                printf("%d %c %d ", val1, ope[op1], val2);
+                result = val1 - val2;
+                break; 
 
-    case 2:
-        op2 = rand() % 11;
-        printf("%d %c %d = ?\n", op1, ope[op], op2);
-        result = op1 * op2;
-        break;
+            case 2:
+                val2 = rand() % 11;
+                printf("%d %c %d ", val1, ope[op1], val2);
+                result = val1 * val2;
+                break;
 
-    case 3:
-        op2 = rand() % 10 + 1;
-        while(op1 % op2 != 0){
-            /* pour avoir une division entiere */
-            op1 = rand() % 101 + 1; // entre 0 et 100
-            op2 = rand() % 10 + 1;
+            case 3:
+                val2 = rand() % 10 + 1;
+                while(val1 % val2 != 0){
+                    val1 = rand() % 100 + 1;
+                    val2 = rand( % 10 + 1;
+                }
+                printf("(%d %c %d) ",val1,ope[op1],val2);
+                result = roudf(val1/val2);
+                break;
+            }
+        switch(op2){
+            case 0:
+                val3 = rand() % 101;
+                printf("%c %d",ope[op2],val3);
+                result = result + val3;
+                break;
+            case 1:
+                val3 = rand() % 101;
+                printf("%c %d",ope[op2],val3);
+                result = result - val3;
+                break;
+            case 2:
+                val3 = rand() % 11;
+                printf("%c %d",ope[op2],val3);
+                result = result * val3;
+                break;
         }
-        printf("%d %c %d = ?\n", op1, ope[op], op2);
-        result = roundf(op1 / op2);
-        break;
+        switch(op3){
+            case 0:
+                val4 = rand() % 101;
+                printf("%c %d",ope[op3],val4);
+                result = result + val4;
+                break;
+            case 1:
+                val4 = rand() % 101;
+                printf("%c %d",ope[op3],val4);
+                result = result - val4;
+                break;
+            case 2:
+                val4 = rand() % 11;
+                printf("%c %d",ope[op3],val4);
+                result = result * val4;
+                break;
+        }
     }
-    return result;
+    else if(op2 == 3){
+        switch (opfictif){ // + ; - ; *
+            case 0:
+                printf("%d %c ",val1,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = val1 + val2;
+                break;
+
+            case 1:
+                printf("%d %c ",val1,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = val1 + val2;
+                break; 
+
+            case 2:
+                printf("%d %c ",val1,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = val1 + val2;
+                break;
+        }
+        switch(op3){
+            case 0:
+                val4 = rand() % 101;
+                printf("%c %d",ope[op3],val4);
+                result = result + val4;
+                break;
+            case 1:
+                val4 = rand() % 101;
+                printf("%c %d",ope[op3],val4);
+                result = result - val4;
+                break;
+            case 2:
+                val4 = rand() % 11;
+                printf("%c %d",ope[op3],val4);
+                result = result * val4;
+                break;
+        }
+        
+    }
+    else if (op3 == 3){
+        switch (op1){
+            case 0:
+                val2 = rand() % 101;
+                print("%d %c %d ",val1,ope[op1],val2);
+                result = val1 + val2;
+                break;
+
+            case 1:
+                val2 = rand() % 101;
+                printf("%d %c %d ", val1, ope[op1], val2);
+                result = val1 - val2;
+                break; 
+
+            case 2:
+                val2 = rand() % 11;
+                printf("%d %c %d ", val1, ope[op1], val2);
+                result = val1 * val2;
+                break;
+        }
+        switch(opfictif){ // + ; - ; *
+            case 0:
+                printf("%d %c ",result,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = result + val2;
+                break;
+
+            case 1:
+                printf("%d %c ",result,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = result + val2;
+                break;
+                
+            case 2:
+                printf("%d %c ",result,ope[opfictif]); 
+                val2 = rand() % 101;
+                val3 = rand() % 10 + 1;
+                while(val2 % val3 != 0){
+                    val2 = rand() % 100 + 1;
+                    val3 = rand() % 10 + 1;
+                }
+                printf("(%d / %d) ",val2,val3);
+                val2 = roundf(val2 / val3);
+                result = result + val2;
+                break;
+                
+        } 
+    }
 }
 
 
