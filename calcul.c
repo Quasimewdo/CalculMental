@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#define TOTALE 20
 
 char niveau(){
     //Pour choisir le niveau de difficulté
@@ -177,23 +178,23 @@ int hard(){
 
 void comment(int n){
     //Donner l'appréciation selon la note obtenue
-    printf("*******************************************************\n*                      %2d / 20                        *\n", n);
+    printf("*******************************************************\n*                      %2d / %2d                        *\n", n,TOTALE);
     if (n < 6)
-        printf("*             Appréciation : Très Faible              *\n");
+        printf("*             Appreciation : Tres Faible              *\n");
     else if (6 <= n && n < 9)
-        printf("*                Appréciation : Faible                *\n");
+        printf("*                Appreciation : Faible                *\n");
     else if (9 <= n && n < 10)
-        printf("*              Appréciation : Insuffisant             *\n");
+        printf("*              Appreciation : Insuffisant             *\n");
     else if (10 <= n && n < 12)
-        printf("*               Appréciation : Passable               *\n");
+        printf("*               Appreciation : Passable               *\n");
     else if (12 <= n && n < 14)
-        printf("*                  Appréciation : Bien                *\n");
+        printf("*                  Appreciation : Bien                *\n");
     else if (14 <= n && n < 16)
-        printf("*               Appréciation : Assez Bien             *\n");
+        printf("*               Appreciation : Assez Bien             *\n");
     else if (16 <= n && n < 18)
-        printf("*                Appréciation : Très Bien             *\n");
+        printf("*                Appreciation : Tres Bien             *\n");
     else
-        printf("*                Appréciation : Excellent             *\n");
+        printf("*                Appreciation : Excellent             *\n");
     printf("*******************************************************\n");
     printf("\n");
 }
@@ -203,7 +204,7 @@ int note(char choix){
     int mark=0;
     int result, answer; 
 
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < TOTALE; i++){
         printf("%d . ", i+1);
         switch (choix)
         {
@@ -232,7 +233,7 @@ int note(char choix){
             printf("Vrai %d/20\n", mark);
         }
         else{
-            printf("Faux %d/20     Résultat = %d \n", mark, result);
+            printf("Faux %d/20     Resultat = %d \n", mark, result);
         }   
         printf("-------------------------------------------------------\n");
     }
