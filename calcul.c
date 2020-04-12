@@ -128,7 +128,6 @@ int hard(){
     //Mode Hard : composition de 3 operateurs choist parmi (+ - * /) et 4 valeurs
     //Obligation d'une (et une seule) division entiere entre valeurs 1 et 100
     //Multiplication de valeurs comprises entre 0 et 100
-    //
     char ope[3] = {'+', '-', '*'};
     int result;
     time_t t;
