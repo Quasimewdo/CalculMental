@@ -83,15 +83,14 @@ int medium(){
             result = val1 * val2;
             break;
         }
+        val3 = rand() % 101;
         switch (op2){
         case 0: 
-            val3 = rand() % 101;
             printf("+ %d = ?\n", val3);
             result = result + val3;
             break;
         
         case 1: 
-            val3 = rand() % 101;
             printf("- %d = ?\n", val3);
             result = result - val3;
             break;

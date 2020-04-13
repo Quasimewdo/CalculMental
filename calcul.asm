@@ -1,4 +1,5 @@
 .data
+
 ope : .asciiz "+-*/"
 sep : .asciiz "\n*******************************************************\n"
 mess1 : .asciiz "         Veuillez choisir votre niveau du jeu          \nNiveau facile : taper 1\nNiveau medium : taper 2\nNiveau difficile : taper 3\nVotre choix : "
@@ -13,6 +14,11 @@ exc : .asciiz "*                Appreciation : Excellent             *"
 notedeb : .asciiz "*                      "
 notefin : .asciiz "                        *\n"
 slash : " / "
+plus : .asciiz " + "
+moins : .asciiz " - "
+fois : .asciiz " * "
+divi : .asciiz " / "
+egal : .asciiz " = ?\n"
 
 .text
 
@@ -28,6 +34,8 @@ main :
     	ori $a0, $v0, 0
 	sb $a0, 0($sp)    #Charge la valeur $a0 com argument
 	jal fctComment   #Test fonction comment
+	
+	jal fctMedium
 	
 	ori $v0, $0, 10
 	syscall
@@ -157,6 +165,258 @@ Else :  la $a0, exc
 SUITE : la $a0, sep
 	ori $v0, $0, 4
 	syscall
+	
+	lw $ra, 0($sp)
+	lw $fp, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra	
+	
+	
+	
+fctMedium : 
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $fp, 4($sp)
+	addiu $fp, $sp, 8
+	
+	ori $a1, $0, 3
+	ori $v0, $0, 42
+	syscall
+	
+	ori $t0, $a0, 0 #op1
+	
+	syscall
+	ori $t1, $a0, 0 #op2
+	
+	ori $a1, $0, 101
+	syscall
+	ori $t2, $a0, 0 #val1
+	
+	subi $t5, $t1, 2
+	beq $t5, $0, ELSEMedium
+	
+	syscall
+	ori $t3, $a0, 0 #val2
+	
+	bne $t0, $0, ElifOp1  #si op1 == 0
+	
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	add $t2, $t2, $t3 #$t2 stock result temporaire
+	j SuiteOp2
+	
+	
+ElifOp1 : 
+	subi $t0, $t0, 1
+	bne $t0, $0, ElseOp1  #si op1 == 1
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	sub $t2, $t2, $t3
+	j SuiteOp2
+	
+ElseOp1 : 
+	ori $a1, $0, 11
+	ori $v0, $0, 42
+	syscall
+	
+	ori $t3, $a0, 0 #val2
+	
+	subi $t0, $t0, 1
+	bne $t0, $0, SuiteOp2  #si op1 == 2
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	mult $t2, $t3
+	mflo $t2
+	j SuiteOp2
+	
+
+SuiteOp2 : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t4, $a0, 0  #val3
+	
+	bne $t1, $0, ElseOp2	#si op2 == 0
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	add $t2, $t2, $t4
+	j SUITEMedium
+	
+ElseOp2 : 
+	subi $t1, $t1, 1
+	bne $t1, $0, ElseOp2
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t2, $t2, $t4
+	j SUITEMedium
+	
+	
+ELSEMedium : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t3, $a0, 0 #val2
+	
+	ori $a1, $0, 11
+	syscall
+	ori $t4, $a0, 0 #val3
+	
+	bne $t0, $0, ElifOp
+	
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t3, $t4
+	mflo $t3
+	
+	add $t2, $t2, $t3
+	j SUITEMedium
+	
+ElifOp : 
+	subi $t1, $t1, 1
+	bne $t1, $0, ElseOp
+
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t3, $t4
+	mflo $t3
+	
+	sub $t2, $t2, $t3
+	j SUITEMedium
+	
+ElseOp : 
+	ori $a1, $0, 11
+	syscall
+	ori $t3, $a0, 0  #val2
+	
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t2, $t3
+	mflo $t3
+	
+	mult $t3, $t4
+	mflo $t2
+	j SUITEMedium
+
+SUITEMedium :  
+	ori $v0, $t2, 0
 	
 	lw $ra, 0($sp)
 	lw $fp, 4($sp)
