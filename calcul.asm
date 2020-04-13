@@ -1,7 +1,9 @@
 .data
 
+TOTALE : .word 5
 ope : .asciiz "+-*/"
 sep : .asciiz "\n*******************************************************\n"
+sep2 : .asciiz "-------------------------------------------------------\n"
 mess1 : .asciiz "         Veuillez choisir votre niveau du jeu          \nNiveau facile : taper 1\nNiveau medium : taper 2\nNiveau difficile : taper 3\nVotre choix : "
 mess2 : .asciiz "            Vous avez 20 calculs à effectuer           \n"
 tf : .asciiz "*             Appreciation : Très Faible              *"
@@ -19,6 +21,10 @@ moins : .asciiz " - "
 fois : .asciiz " * "
 divi : .asciiz " / "
 egal : .asciiz " = ?\n"
+point : .asciiz " . "
+vrai : .asciiz "Vrai "
+faux : .asciiz "Faux "
+resultat : .asciiz "     Resultat = "
 
 .text
 
@@ -27,15 +33,14 @@ main :
 	addiu $fp, $sp, 64
 	jal fctNiveau     #Choix deniveau
 	ori $a0, $v0, 0 #argument choix
-	
-	ori $v0,$0,5      #lire un integer note
-    	syscall
     	
-    	ori $a0, $v0, 0
+	jal fctMedium
+	
+	jal fctNote
+	ori $a0, $v0, 0
+	
 	sb $a0, 0($sp)    #Charge la valeur $a0 com argument
 	jal fctComment   #Test fonction comment
-	
-	jal fctMedium
 	
 	ori $v0, $0, 10
 	syscall
@@ -81,7 +86,8 @@ fctComment :
 	addiu $fp, $sp, 8
 	
 	ori $t0, $a0, 0 #note dans $t0
-	ori $t1, $0, 20  #TOTALE
+	la $t1, TOTALE
+	lw $t1, 0($t1)
 	ori $t2, $0, 10 
 	
 	la $a0, sep
@@ -192,8 +198,9 @@ fctMedium :
 	syscall
 	ori $t2, $a0, 0 #val1
 	
-	subi $t5, $t1, 2
-	beq $t5, $0, ELSEMedium
+	subi $t1, $t1, 2
+	beq $t1, $0, ELSEMedium
+	addi $t1, $t1, 2
 	
 	syscall
 	ori $t3, $a0, 0 #val2
@@ -422,4 +429,107 @@ SUITEMedium :
 	lw $fp, 4($sp)
 	addiu $sp, $sp, 8
 	jr $ra	
+	
+	
+fctNote : 
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $fp, 4($sp)
+	addiu $fp, $sp, 8
+
+	addi $t5, $0, 0  #mark
+	addi $t6, $0, 1 #i
+	la $t7, TOTALE
+	lw $t7, 0($t7)
+	addi $t7, $t7, 1 #TOTALE
+	
+POUR :  slt $t8, $t6, $t7
+	beq $t8, $zero, SUITENote
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, point
+	ori $v0, $0, 4
+	syscall
+	
+	jal fctMedium
+	
+	ori $t9, $v0, 0 #result
+	ori $v0, $0, 5 #answer
+	syscall
+	bne $t9, $v0, FAUX
+	addi $t5, $t5, 1
+	
+	la $a0, vrai
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, slash
+	ori $v0, $0, 4
+	syscall
+	
+	addi $a0, $t7, -1
+	ori $v0, $0, 1
+	syscall
+	
+	ori $a0, $0, 10
+	ori $v0, $0, 11
+	syscall
+	
+	j SuitePour
+	
+	
+	
+FAUX :  la $a0, faux
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, slash
+	ori $v0, $0, 4
+	syscall
+	
+	addi $a0, $t7, -1
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, resultat
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t9, 0
+	ori $v0, $0, 1
+	syscall
+	
+	addi $a0, $0, 10
+	ori $v0, $0, 11
+	syscall
+	j SuitePour
+	
+SuitePour :
+	la $a0, sep2
+	ori $v0, $0, 4
+	syscall
+	
+	addi $t6, $t6, 1
+	j POUR
+	
+SUITENote : 
+	ori $v0, $t5, 0
+
+	lw $ra, 0($sp)
+	lw $fp, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra	
+	
+
+
 	
