@@ -377,7 +377,7 @@ void comment(int n){
     printf("*******************************************************\n*                      %2d / %2d                        *\n", n,TOTALE);
     float taux = n*10/TOTALE;
     if (taux < 3)
-        printf("*             Appreciation : Tres Faible              *\n");
+        printf("*             Appreciation : Très Faible              *\n");
     else if (3 <= taux && taux < 5)
         printf("*              Appreciation : Insuffisant             *\n");
     else if (5 <= taux && taux < 6)
@@ -387,7 +387,7 @@ void comment(int n){
     else if (7 <= taux && taux < 8)
         printf("*               Appreciation : Assez Bien             *\n");
     else if (8 <= taux && taux < 9)
-        printf("*                Appreciation : Tres Bien             *\n");
+        printf("*                Appreciation : Très Bien             *\n");
     else
         printf("*                Appreciation : Excellent             *\n");
     printf("*******************************************************\n");
