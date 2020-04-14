@@ -15,7 +15,6 @@ tb : .asciiz "*                Appreciation : Très Bien             *"
 exc : .asciiz "*                Appreciation : Excellent             *"
 notedeb : .asciiz "*                      "
 notefin : .asciiz "                        *\n"
-slash : " / "
 plus : .asciiz " + "
 moins : .asciiz " - "
 fois : .asciiz " * "
@@ -28,23 +27,25 @@ resultat : .asciiz "     Resultat = "
 
 .text
 
+# -- Fonction main
 main :
 	subu $sp, $sp, 64
 	addiu $fp, $sp, 64
-	jal fctNiveau     #Choix deniveau
-	ori $a0, $v0, 0 #argument choix
+	#jal fctNiveau     #Choix deniveau
+	#ori $a0, $v0, 0 #argument choix
     	
-	jal fctMedium
+	jal fctHard
 	
-	jal fctNote
-	ori $a0, $v0, 0
+	#jal fctNote
+	#ori $a0, $v0, 0
 	
-	sb $a0, 0($sp)    #Charge la valeur $a0 com argument
-	jal fctComment   #Test fonction comment
+	#sb $a0, 0($sp)    #Charge la valeur $a0 com argument
+	#jal fctComment   #Test fonction comment
 	
 	ori $v0, $0, 10
 	syscall
 	
+# -- Fonction niveau pour choisir le niveau de difficulté
 fctNiveau : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -79,6 +80,7 @@ fctNiveau :
 	addiu $sp, $sp, 8
 	jr $ra
 	
+# -- Fonction comment donne une appréciation en fonction de note obtenue
 fctComment : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -102,7 +104,7 @@ fctComment :
 	ori $v0, $0, 1
 	syscall
 	
-	la $a0, slash
+	la $a0, divi
 	ori $v0, $0, 4
 	syscall
 	
@@ -178,7 +180,8 @@ SUITE : la $a0, sep
 	jr $ra	
 	
 	
-	
+# -- Fonction medium : composition deux opérateurs (+, -, *) et trois valeurs
+# Multiplication entre une valeur compris entre 0 et 100 et une valeur compris entre 0 et 10
 fctMedium : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -431,21 +434,769 @@ SUITEMedium :
 	jr $ra	
 	
 	
+# -- Fonction hard : Composition de 3 opérateurs choisi parmi (+, -, *, /) et 4 valeurs
+# Obligation d'une (et une seule) division entiere entre valeurs <= 100 et <= 10
+# Multiplication de valeurs comprises entre <= 100 et <= 10
+fctHard : 
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $fp, 4($sp)
+	addiu $fp, $sp, 8
+	
+	ori $a1, $0, 3
+	ori $v0, $0, 42
+	syscall
+	
+	addi $t0, $a0, 1       	#div = rand % 3 + 1
+	
+	ori $a1, $0, 101
+	syscall
+	
+	ori $t4, $a0, 0        	#val1 = rand % 101
+	
+	subi $t0, $t0, 1	#div -= div
+	bne $t0, $0, Div2	#si div != 0 -> Div2
+	ori $a1, $0, 3
+	syscall
+	ori $t2, $a0, 0		#op2 = rand % 3
+	syscall
+	ori $t3, $a0, 0		#op3 = ranf % 3
+	ori $a1, $0, 10
+	syscall
+	addi $t5, $a0, 1	#val2 = rand % 10 + 1
+	
+TQ1 :   div $t4, $t5           
+	mfhi $t8		#$t8 = val1 % val2
+	beqz $t8, FinTQ1	#si $t8 == 0 -> FinTQ1
+	ori $a1, $0, 101
+	syscall
+	ori $t4, $a0, 0		#réinitialise val1
+	ori $a1, $0, 10
+	syscall
+	addi $t5, $a0, 1	#réinitialise val2
+	j TQ1
+	
+FinTQ1 : 
+	ori $a0, $t4, 0		
+	ori $v0, $0, 1
+	syscall			#printf(val1)
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall			#printf(" / ")
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall			#printf(val2)
+	
+	div $t4, $t5
+	mflo $t4 		#result = val1 / val2
+	
+	subi $t3, $t3, 2	#op3 = op3 - 2
+	beqz $t3, Div1Else	#si op3 == 0 -> Div1Else (.ie. si op3 == 2)  
+	addi $t3, $t3, 2	#op3 = op3 + 2 (remet la valeur op3)
+	
+	bnez $t2, Div1op2Cas1	#si op2 != 0 -> Div1op2Cas1
+	
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	
+	ori $t6, $a0, 0 	#val3 = rand % 101
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall			#printf(" + ")
+	
+	ori $a0, $t6, 0		
+	ori $v0, $0, 1
+	syscall			#printf(val3)
+	
+	add $t4, $t4, $t6	#result = result + val3
+	j Div1op3		#switch op3
+	
+Div1op2Cas1 : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t6, $a0, 0 	#val3 = rand % 101
+
+	subi $t2, $t2, 1	#op2 = op2 -1
+	bnez $t2, Div1op2Cas2	#si op2 != 0 -> Div1op2Cas2 (.ie. si op2 != 1)
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall			#printf(" - ")
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall			#printf(val3)
+	
+	sub $t4, $t4, $t6	#result = result - val3
+	j Div1op3		#switch op3	
+	
+Div1op2Cas2 : 
+	ori $a1, $0, 11
+	ori $v0, $0, 42
+	syscall			
+	
+	ori $t6, $a0, 0		#val3 = rand % 11
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall			#printf(" * ")
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall			#printf(val3)
+	
+	mult $t4, $t6
+	mflo $t4		#result = reslut * val3
+	
+	
+Div1op3 : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t7, $a0, 0 	#val4 = rand % 101
+	
+	bnez $t3, Div1op3Cas1	#si op3 != 0 -> Div1op3Cas1
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	add $t4, $t4, $t7	#result = result + val4
+	j SUITEHard
+	
+Div1op3Cas1 : 
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t4, $t4, $t7	#result = result - val4
+	j SUITEHard
+	
+	
+	
+Div1Else : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t6, $a0, 0 	#val3 = rand % 101
+	
+	ori $a1, $0, 11
+	syscall
+	ori $t7, $a0, 0 	#val4 = rand % 11
+	
+	ori $a1, $0, 2
+	syscall
+	ori $t2, $a0, 0 	#op2 = rand % 2
+	
+	bnez $t2, Div1ElseOp2Cas1	#si op2 != 0 -> switch cas op2 == 1
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall			#printf(" + ")
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall			#printf(val3)
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall			#printf(" * ")
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall			#printf(val4)
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t6, $t7
+	mflo $t6		#val3 * val4
+	
+	add $t4, $t4, $t6	#result = result + val3 * val4
+	j SUITEHard
+	
+Div1ElseOp2Cas1 : 
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t6, $t7
+	mflo $t6
+	
+	sub $t4, $t4, $t6	#result = result - val3 * val4
+	j SUITEHard
+	
+Div2 : 
+	subi $t0, $t0, 1
+	bnez $t0, Div3		#si div - 1 != 0 -> Div3 (.ie. div != 2)
+	ori $a1, $0, 3
+	ori $v0, $0, 42
+	syscall
+	ori $t1, $a0, 0 	#op1 = rand %3
+	
+	syscall
+	ori $t3, $a0, 0 	#op3 = rand % 3
+	
+	subi $t3, $t3, 2
+	beqz $t3, Div2Else	#si op3 == 2 -> Div2Else
+	addi $t3, $t3, 2
+	
+	ori $a1, $0, 101
+	syscall
+	ori $t5, $a0, 0 	#val2 = rand % 101
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#val3 = rand % 10 + 1
+	
+	bnez $t1, Div2op1Cas1	#si op1 != 0 -> op1 == 1
+	
+TQ2 :   div $t5, $t6
+	mfhi $t8		#$t8 = val2 % val3
+	beqz $t8, FinTQ2	#si == 0 -> FinTQ2 
+	ori $a1, $0, 101
+	syscall
+	ori $t5, $a0, 0 	#réinitialise val2
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#réinitialise val3
+	j TQ2
+	
+FinTQ2 : 
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	div $t5, $t6
+	mflo $t5
+	add $t4, $t4, $t5
+	j Div2op3
+	
+Div2op1Cas1 : 
+
+TQ3 :   div $t5, $t6
+	mfhi $t8
+	beqz $t8, FinTQ3
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0 	#réinitialise val2
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#réinitialise val3
+	j TQ3
+	
+FinTQ3 : 
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	div $t5, $t6
+	mflo $t5
+	sub $t4, $t4, $t5
+	j Div2op3
+	
+
+Div2op1Cas2 : 
+
+TQ4 :   mult $t4, $t5
+	mflo $t9
+	div $t9, $t6
+	mfhi $t8
+	beqz $t8, FinTQ4
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0 	#réinitialise val2
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#réinitialise val3
+	j TQ4
+	
+FinTQ4 : 
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	mult $t4, $t5
+	mflo $t4
+	div $t4, $t6
+	mflo $t4
+	
+Div2op3 : 
+	bnez $t3, Div2op3Cas1
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t7, $a0, 0
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	add $t4, $t4, $t7
+	j SUITEHard
+	
+Div2op3Cas1 : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t7, $a0, 0
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t4, $t4, $t7
+	j SUITEHard
+
+
+Div2Else : 
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0 	#val2
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#val3
+	
+TQ5 :   div $t5, $t6
+	mfhi $t8
+	beqz $t8, FinTQ5
+	ori $a1, $0, 101
+	syscall
+	ori $t5, $a0, 0 	#réinitialise val2
+	ori $a1, $0, 10
+	syscall
+	addi $t6, $a0, 1 	#réinitialise val3
+	j TQ5
+	
+FinTQ5 : 
+	ori $a1, $0, 11
+	syscall
+	ori $t7, $a0, 0		#val4 = rand % 11
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall			#print(val1)
+	
+	div $t5, $t6
+	mflo $t8
+	mult $t8, $t7
+	mflo $t8
+	
+	bnez $t1, Div2ElseOp1Cas1
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	add $t8, $t4, $t8
+	j FinDiv2Else
+	
+Div2ElseOp1Cas1 : 
+	subi $t1, $t1, 1
+	bnez $t1, Div2ElseOp1Cas2
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t8, $t4, $t8
+	j FinDiv2Else
+	
+Div2ElseOp1Cas2 : 
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t4, $t8
+	mflo $t8
+	j FinDiv2Else
+	
+FinDiv2Else : 
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	ori $t4, $t8, 0 	#résult
+	j SUITEHard
+	
+Div3 : 
+	ori $a1, $0, 3
+	ori $v0, $0, 42
+	syscall
+	ori $t1, $a0, 0 	#op1 = rand % 3
+	
+	syscall
+	ori $t2, $a0, 0 	#op2 = rand % 3
+	
+	subi $t2, $t2, 2
+	beqz $t2, Div3Else
+	addi $t2, $t2, 2
+	
+	ori $a1, $0, 101
+	syscall
+	ori $t6, $a0, 0 	#val3 = rand % 101
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t7, $a0, 1  	#val4 = rand % 10 + 1
+	
+TQ6 :   div $t6, $t7
+	mfhi $t8
+	beqz $t8, FinTQ6
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t6, $a0, 0 	#réinitialise val3
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t7, $a0, 1  	#réinitialise val4
+	j TQ6
+	
+FinTQ6 : 
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall 		#printf(val1)
+	
+	bnez $t1, Div3op1Cas1
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0		#val2 = rand % 101
+	
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	add $t4, $t4, $t5
+	j Div3op2
+	
+Div3op1Cas1 : 
+	subi $t1, $t1, 1
+	bnez $t1, Div3op1Cas2
+	
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0		#val2 = rand % 101
+	
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	sub $t4, $t4, $t5
+	j Div3op2
+	
+Div3op1Cas2 : 
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall
+	
+	mult $t4, $t5
+	mflo $t4
+	
+Div3op2 : 
+	div $t6, $t7
+	mflo $t8		#$t8 = val3 / val4
+	
+	bnez $t2, Div3op2Cas1
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	add $t4, $t4, $t8
+	j FinDiv3op2
+	
+Div3op2Cas1 : 
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t4, $t4, $t8
+	
+FinDiv3op2 : 
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	j SUITEHard
+	
+Div3Else : 
+	ori $a1, $0, 2
+	ori $v0, $0, 42
+	syscall
+	ori $t1, $a0, 0 	#op1 = rand % 2
+	
+	ori $a1, $0, 11
+	syscall
+	ori $t6, $a0, 0 	#val3 = rand % 11
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t7, $a0, 1 	#val4 = rand % 10 + 1
+	
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall			#print(val1)
+	
+	ori $a1, $0, 101
+	ori $v0, $0, 42
+	syscall
+	ori $t5, $a0, 0		#val2 = rand % 101
+	
+TQ7 :   mult $t5, $t6
+	mflo $t8
+	div $t8, $t7
+	mfhi $t8		#$t8 = (val2 * val3) % val4
+	beqz $t8, FinTQ7
+	ori $a1, $0, 11
+	ori $v0, $0, 42
+	syscall
+	ori $t6, $a0, 0		#réinitialise val3
+	
+	ori $a1, $0, 10
+	syscall
+	addi $t7, $a0, 1	#réinitialise val4
+	j TQ7
+	
+FinTQ7 :
+	mult $t5, $t6
+	mflo $t8
+	div $t8, $t7
+	mflo $t8
+	
+	bnez $t1, Div3ElseCas1
+
+	la $a0, plus
+	ori $v0, $0, 4
+	syscall
+	
+	add $t8, $t4, $t8
+	j FinDiv3Else
+	
+Div3ElseCas1 : 
+	subi $t1, $t1, 1
+	bnez $t1, Div3ElseCas2
+	la $a0, moins
+	ori $v0, $0, 4
+	syscall
+	
+	sub $t8, $t4, $t8
+	j FinDiv3Else
+	
+Div3ElseCas2 : 
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	mult $t4, $t8
+	mflo $t8
+	
+
+FinDiv3Else : 
+	ori $a0, $t5, 0
+	ori $v0, $0, 1
+	syscall 
+	
+	la $a0, fois
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t6, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, divi
+	ori $v0, $0, 4
+	syscall
+	
+	ori $a0, $t7, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall
+	
+	ori $t4, $t8, 0		#result
+	
+	
+SUITEHard : 
+	ori $a0, $t4, 0
+	ori $v0, $0, 1
+	syscall
+	
+	lw $ra, 0($sp)
+	lw $fp, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra	
+
+
+	
+# -- Fonction note compte et mettre à jour la note du jeu
 fctNote : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
 	sw $fp, 4($sp)
 	addiu $fp, $sp, 8
 
-	addi $t5, $0, 0  #mark
-	addi $t6, $0, 1 #i
-	la $t7, TOTALE
-	lw $t7, 0($t7)
-	addi $t7, $t7, 1 #TOTALE
+	addi $s0, $0, 0  #mark
+	addi $s1, $0, 1 #i
+	la $s2, TOTALE
+	lw $s2, 0($s2)
+	addi $s2, $s2, 1 #TOTALE
 	
-POUR :  slt $t8, $t6, $t7
-	beq $t8, $zero, SUITENote
-	ori $a0, $t6, 0
+POUR :  slt $s3, $s1, $s2
+	beq $s3, $zero, SUITENote
+	ori $a0, $s1, 0
 	ori $v0, $0, 1
 	syscall
 	
@@ -455,25 +1206,25 @@ POUR :  slt $t8, $t6, $t7
 	
 	jal fctMedium
 	
-	ori $t9, $v0, 0 #result
+	ori $s4, $v0, 0 #result
 	ori $v0, $0, 5 #answer
 	syscall
-	bne $t9, $v0, FAUX
-	addi $t5, $t5, 1
+	bne $s4, $v0, FAUX
+	addi $s0, $s0, 1
 	
 	la $a0, vrai
 	ori $v0, $0, 4
 	syscall
 	
-	ori $a0, $t5, 0
+	ori $a0, $s0, 0
 	ori $v0, $0, 1
 	syscall
 	
-	la $a0, slash
+	la $a0, divi
 	ori $v0, $0, 4
 	syscall
 	
-	addi $a0, $t7, -1
+	addi $a0, $s2, -1
 	ori $v0, $0, 1
 	syscall
 	
@@ -489,15 +1240,15 @@ FAUX :  la $a0, faux
 	ori $v0, $0, 4
 	syscall
 	
-	ori $a0, $t5, 0
+	ori $a0, $s0, 0
 	ori $v0, $0, 1
 	syscall
 	
-	la $a0, slash
+	la $a0, divi
 	ori $v0, $0, 4
 	syscall
 	
-	addi $a0, $t7, -1
+	addi $a0, $s2, -1
 	ori $v0, $0, 1
 	syscall
 	
@@ -505,7 +1256,7 @@ FAUX :  la $a0, faux
 	ori $v0, $0, 4
 	syscall
 	
-	ori $a0, $t9, 0
+	ori $a0, $s4, 0
 	ori $v0, $0, 1
 	syscall
 	
@@ -519,11 +1270,11 @@ SuitePour :
 	ori $v0, $0, 4
 	syscall
 	
-	addi $t6, $t6, 1
+	addi $s1, $s1, 1
 	j POUR
 	
 SUITENote : 
-	ori $v0, $t5, 0
+	ori $v0, $s0, 0
 
 	lw $ra, 0($sp)
 	lw $fp, 4($sp)

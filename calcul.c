@@ -125,8 +125,8 @@ int medium(){
 
 int hard(){
     //Mode Hard : composition de 3 operateurs choist parmi (+ - * /) et 4 valeurs
-    //Obligation d'une (et une seule) division entiere entre valeurs 1 et 100
-    //Multiplication de valeurs comprises entre 0 et 100
+    //Obligation d'une (et une seule) division entiere entre valeurs <= 100 et <= 10
+    //Multiplication de valeurs comprises entre <= 100 et <= 10
     char ope[3] = {'+', '-', '*'};
     int result;
     time_t t;
@@ -252,12 +252,6 @@ int hard(){
                 printf("- %d = ?\n", val4);
                 result = result - val4;
                 break;
-
-            case 2:
-                val4 = rand() % 11;
-                printf("* %d = ?\n", val4);
-                result = result * val4;
-                break;
             }
         }
         else{
@@ -337,7 +331,7 @@ int hard(){
                 case 0:
                     val2 = rand() % 101;
                     while((val2 * val3) % val4 != 0){
-                        val3 = rand() % 101;
+                        val3 = rand() % 11;
                         val4 = rand() % 10 + 1;
                     }
                     printf("%d + %d * %d / %d = ?\n", val1, val2, val3, val4);
@@ -347,7 +341,7 @@ int hard(){
                 case 1:
                     val2 = rand() % 101;
                     while((val2 * val3) % val4 != 0){
-                        val3 = rand() % 101;
+                        val3 = rand() % 11;
                         val4 = rand() % 10 + 1;
                     }
                     printf("%d - %d * %d / %d = ?\n", val1, val2, val3, val4);
@@ -357,7 +351,7 @@ int hard(){
                 case 2:
                     val2 = rand() % 11;
                     while((val1 * val2 * val3) % val4 != 0){
-                        val3 = rand() % 101;
+                        val3 = rand() % 11;
                         val4 = rand() % 10 + 1;
                     }
                     printf("%d * %d * %d / %d = ?\n", val1, val2, val3, val4);
