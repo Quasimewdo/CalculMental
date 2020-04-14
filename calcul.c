@@ -2,20 +2,21 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#define TOTALE 5
 
+int NBRECALCULS = 0;
 char niveau(){
     //Pour choisir le niveau de difficulté
+    char n;
     printf("\n*******************************************************\n");
     printf("         Veuillez choisir votre niveau du jeu          \n");
     printf("Niveau facile : taper 1\n");
     printf("Niveau medium : taper 2\n");
     printf("Niveau difficile : taper 3\n");
     printf("Votre choix : ");
-    char n;
     scanf("%c", &n);
     printf("*******************************************************\n");
-    printf("            Vous avez %2d calculs a effectuer           \n",TOTALE);
+    printf("            Combien de calculs voulez-vous faire ?           ");
+    scanf("%d",&NBRECALCULS);
     return (n);
 }
 
@@ -336,7 +337,7 @@ int hard(){
 
 void comment(int n){
     //Donner l'appréciation selon la note obtenue
-    printf("*******************************************************\n*                      %2d / %2d                        *\n", n,TOTALE);
+    printf("*******************************************************\n*                      %2d / %2d                        *\n", n,NBRECALCULS);
     if (n < 6)
         printf("*             Appreciation : Tres Faible              *\n");
     else if (6 <= n && n < 9)
@@ -362,7 +363,7 @@ int note(char choix){
     int mark=0;
     int result, answer; 
 
-    for (int i = 0; i < TOTALE; i++){
+    for (int i = 0; i < NBRECALCULS; i++){
         printf("%d . ", i+1);
         switch (choix)
         {
