@@ -7,6 +7,7 @@ sep2 : .asciiz "-------------------------------------------------------\n"
 mess1 : .asciiz "         Veuillez choisir votre niveau du jeu          \nNiveau facile : taper 1\nNiveau medium : taper 2\nNiveau difficile : taper 3\nVotre choix : "
 mess2 : .asciiz "            Vous avez "
 mess3 : .asciiz " calculs à effectuer           \n"
+erreur : .asciiz "\nErreur : Veuillez taper 1, 2 ou 3\nVotre choix : "
 tf : .asciiz "*             Appreciation : Très Faible              *"
 in : .asciiz "*              Appreciation : Insuffisant             *"
 pas : .asciiz "*               Appreciation : Passable               *"
@@ -66,6 +67,27 @@ fctNiveau :
 
 	ori $t0, $v0, 0
 	
+	subi $t0, $t0, 49
+	bgez $t0, verifChoix
+	j Erreur
+	
+verifChoix : 
+	subi $t0, $t0, 2
+	blez $t0, SuiteChoix
+	j Erreur
+	
+Erreur : 
+	la $a0, erreur
+	ori $v0, $0, 4
+	syscall
+	
+	ori $v0, $0, 12
+	syscall
+	ori $t0, $v0, 0		#nouvel choix
+
+	
+SuiteChoix : 
+	addi $t0, $t0, 51
     	la $a0, sep
 	ori $v0, $0, 4
 	syscall
@@ -1243,8 +1265,9 @@ apMedium :
 	j Test
 	
 apHard : 
-	addi $s5, $s5, 1
+	subi $s5, $s5, 1
 	jal fctHard
+	
 	
 Test : 
 	ori $s4, $v0, 0 #result
@@ -1313,6 +1336,7 @@ SuitePour :
 	
 	addi $s1, $s1, 1
 	j POUR
+
 	
 SUITENote : 
 	ori $v0, $s0, 0

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#define TOTALE 20
+#define TOTALE 5
 
 char niveau(){
     //Pour choisir le niveau de difficulté
@@ -14,6 +14,11 @@ char niveau(){
     printf("Votre choix : ");
     char n;
     scanf("%c", &n);
+    while (n != '1' && n != '2' && n != '3' ){
+        printf("\nErreur : Veuillez taper 1, 2 ou 3\n");
+        printf("Votre choix : ");
+        scanf("%c", &n);
+    }
     printf("*******************************************************\n");
     printf("            Vous avez %2d calculs a effectuer           \n",TOTALE);
     return (n);
@@ -407,13 +412,6 @@ int note(char choix){
         case '3':
             result = hard();
             break;
-        
-        default:
-            printf("Erreur : Veuillez taper 1, 2 ou 3\n");
-            printf("Votre choix : ");
-            scanf("%c", &choix);
-            printf("*******************************************************\n");
-            return (note(choix));
         }
         scanf("%d", &answer);
         if (answer == result){
