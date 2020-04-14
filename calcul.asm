@@ -33,16 +33,16 @@ resultat : .asciiz "     Resultat = "
 main :
 	subu $sp, $sp, 64
 	addiu $fp, $sp, 64
-	jal fctNiveau     	#Choix deniveau
-	ori $a0, $v0, 0 	#argument choix
+	jal fctNiveau     	# Choix du niveau
+	ori $a0, $v0, 0 	# argument choix
     	
 	#jal fctHard
 	sb $a0, 0($sp)
 	jal fctNote
 	ori $a0, $v0, 0
 	
-	sb $a0, 0($sp)    	#Charge la valeur $a0 com argument
-	jal fctComment   	#Test fonction comment
+	sb $a0, 0($sp)    	# Charge la valeur $a0 comme argument
+	jal fctComment   	# Test fonction comment
 	
 	ori $v0, $0, 10
 	syscall
@@ -83,7 +83,7 @@ Erreur :
 	
 	ori $v0, $0, 12
 	syscall
-	ori $t0, $v0, 0		#nouvel choix
+	ori $t0, $v0, 0		# nouveau choix
 
 	
 SuiteChoix : 
@@ -221,6 +221,87 @@ fctEasy :
 	sw $fp, 4($sp)
 	addiu $fp, $sp, 8
 	
+	ori $a1, $0, 2
+	ori $v0, $0, 42
+	syscall        #genere opeateur 
+	# $a0 contient soit 0 ou 1
+	ori $t0, $a0, 0 # ope1
+	
+	ori $a1, $0, 101
+	syscall
+	ori $t2, $a0, 0 # val1 comprise entre 0 et 100
+	
+	syscall
+	ori $t3, $a0, 0 # val2 comprise entre 0 et 100
+	
+	bne $t0,$0, ElifEasy 
+	# cas ou op1 == 0 -> +
+	ori $a0, $t2, 0 # $a0 contient val1
+	ori $v0, $0, 1
+	syscall       # affiche val1
+	
+	la $a0, plus # $a0 contient l'adrese de plus 
+	ori $v0, $0, 4
+	syscall      # affiche plus -> "+"
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall      # affiche val2
+	
+	add $t2, $t2, $t3 # $t2 <- resultat de l'addition
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall # affiche " = ?\n"
+	j SUITEEasy
+
+ElifEasy: # cas ou op1 == 1 -> -
+	sub $t4, $t2, $t3 
+	blez $t4, SINON
+	# cas ou $t2 > $t3
+	ori $a0, $t2, 0 # $a0 contient val1
+	ori $v0, $0, 1
+	syscall       # affiche val1
+	
+	la $a0, moins # $a0 contient l'adrese de moins
+	ori $v0, $0, 4
+	syscall      # affiche plus -> "-"
+	
+	ori $a0, $t3, 0
+	ori $v0, $0, 1
+	syscall      # affiche val2
+	
+	sub $t2, $t2, $t3 # $t2 <- resultat de l'addition
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall # affiche " = ?\n"
+	j SUITEEasy
+
+SINON:
+	# cas ou $t3 >= $t2
+	ori $a0, $t3, 0 # $a0 contient val1
+	ori $v0, $0, 1
+	syscall       # affiche val1
+	
+	la $a0, moins # $a0 contient l'adrese de moins
+	ori $v0, $0, 4
+	syscall      # affiche plus -> "-"
+	
+	ori $a0, $t2, 0
+	ori $v0, $0, 1
+	syscall      # affiche val2
+	
+	sub $t2, $t3, $t2 # $t2 <- resultat de l'addition
+	
+	la $a0, egal
+	ori $v0, $0, 4
+	syscall # affiche " = ?\n"
+	j SUITEEasy
+	
+
+SUITEEasy:
+	ori $v0, $t2, 0
 	
 	lw $ra, 0($sp)
 	lw $fp, 4($sp)
@@ -237,46 +318,48 @@ fctMedium :
 	addiu $fp, $sp, 8
 	
 	ori $a1, $0, 3
-	ori $v0, $0, 42
-	syscall
+	ori $v0, $0, 42 
+	syscall        
 	
 	ori $t0, $a0, 0 #op1
+	# $a0 contient valeur aleatoire entre 0 et 2
 	
-	syscall
-	ori $t1, $a0, 0 #op2
+	syscall         
+	ori $t1, $a0, 0 # op2
 	
 	ori $a1, $0, 101
 	syscall
-	ori $t2, $a0, 0 #val1
+	ori $t2, $a0, 0 # val1 comprise entre 0 et 100
 	
-	subi $t1, $t1, 2
-	beq $t1, $0, ELSEMedium
+	subi $t1, $t1, 2 
+	beq $t1, $0, ELSEMedium # on traite a part le cas ou op2 = *
 	addi $t1, $t1, 2
 	
 	syscall
-	ori $t3, $a0, 0 #val2
+	ori $t3, $a0, 0 # val2 comprise entre 0 et 100
 	
-	bne $t0, $0, ElifOp1  #si op1 == 0
-	
-	ori $a0, $t2, 0
+	bne $t0, $0, ElifOp1  
+	# cas ou op1 == 0
+	ori $a0, $t2, 0 # $a0 contient val1
 	ori $v0, $0, 1
-	syscall
+	syscall       # affiche val1
 	
-	la $a0, plus
+	la $a0, plus # $a0 contient l'adrese de plus 
 	ori $v0, $0, 4
-	syscall
+	syscall      # affiche plus -> "+"
 	
 	ori $a0, $t3, 0
 	ori $v0, $0, 1
-	syscall
+	syscall      # affiche val2
 	
-	add $t2, $t2, $t3 #$t2 stock result temporaire
+	add $t2, $t2, $t3 # $t2 stock result temporaire
 	j SuiteOp2
 	
 	
 ElifOp1 : 
 	subi $t0, $t0, 1
-	bne $t0, $0, ElseOp1  #si op1 == 1
+	bne $t0, $0, ElseOp1
+	# cas ou op1 == 1
 	ori $a0, $t2, 0
 	ori $v0, $0, 1
 	syscall
@@ -292,7 +375,7 @@ ElifOp1 :
 	sub $t2, $t2, $t3
 	j SuiteOp2
 	
-ElseOp1 : 
+ElseOp1 : # cas ou op1 == 2
 	ori $a1, $0, 11
 	ori $v0, $0, 42
 	syscall
@@ -300,7 +383,8 @@ ElseOp1 :
 	ori $t3, $a0, 0 #val2
 	
 	subi $t0, $t0, 1
-	bne $t0, $0, SuiteOp2  #si op1 == 2
+	bne $t0, $0, SuiteOp2  
+	# cas ou op2 == 2 -> *
 	ori $a0, $t2, 0
 	ori $v0, $0, 1
 	syscall
@@ -324,7 +408,8 @@ SuiteOp2 :
 	syscall
 	ori $t4, $a0, 0  #val3
 	
-	bne $t1, $0, ElseOp2	#si op2 == 0
+	bne $t1, $0, ElseOp2	
+	# cas ou op2 == 0 -> +
 	
 	la $a0, plus
 	ori $v0, $0, 4
@@ -344,6 +429,7 @@ SuiteOp2 :
 ElseOp2 : 
 	subi $t1, $t1, 1
 	bne $t1, $0, ElseOp2
+	# cas ou op2 == 1 -> -
 	
 	la $a0, moins
 	ori $v0, $0, 4
@@ -361,7 +447,7 @@ ElseOp2 :
 	j SUITEMedium
 	
 	
-ELSEMedium : 
+ELSEMedium :  # cas ou op2 == 2 -> *
 	ori $a1, $0, 101
 	ori $v0, $0, 42
 	syscall
