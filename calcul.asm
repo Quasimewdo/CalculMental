@@ -31,16 +31,16 @@ resultat : .asciiz "     Resultat = "
 main :
 	subu $sp, $sp, 64
 	addiu $fp, $sp, 64
-	#jal fctNiveau     #Choix deniveau
-	#ori $a0, $v0, 0 #argument choix
+	jal fctNiveau     	#Choix deniveau
+	ori $a0, $v0, 0 	#argument choix
     	
-	jal fctHard
+	#jal fctHard
+	sb $a0, 0($sp)
+	jal fctNote
+	ori $a0, $v0, 0
 	
-	#jal fctNote
-	#ori $a0, $v0, 0
-	
-	#sb $a0, 0($sp)    #Charge la valeur $a0 com argument
-	#jal fctComment   #Test fonction comment
+	sb $a0, 0($sp)    	#Charge la valeur $a0 com argument
+	jal fctComment   	#Test fonction comment
 	
 	ori $v0, $0, 10
 	syscall
@@ -1170,9 +1170,7 @@ FinDiv3Else :
 	
 	
 SUITEHard : 
-	ori $a0, $t4, 0
-	ori $v0, $0, 1
-	syscall
+	ori $v0, $t4, 0
 	
 	lw $ra, 0($sp)
 	lw $fp, 4($sp)
@@ -1188,13 +1186,14 @@ fctNote :
 	sw $fp, 4($sp)
 	addiu $fp, $sp, 8
 
-	addi $s0, $0, 0  #mark
-	addi $s1, $0, 1 #i
+	addi $s0, $0, 0  	#mark = 0
+	addi $s1, $0, 1 	#i = 1
 	la $s2, TOTALE
 	lw $s2, 0($s2)
-	addi $s2, $s2, 1 #TOTALE
+	addi $s2, $s2, 1 	#$s2 = TOTALE + 1
+	ori $s5, $a0, 0		#choix
 	
-POUR :  slt $s3, $s1, $s2
+POUR :  slt $s3, $s1, $s2	#i < TOTALE + 1
 	beq $s3, $zero, SUITENote
 	ori $a0, $s1, 0
 	ori $v0, $0, 1
@@ -1204,8 +1203,23 @@ POUR :  slt $s3, $s1, $s2
 	ori $v0, $0, 4
 	syscall
 	
-	jal fctMedium
+	subi $s5, $s5, 49
+	bnez $s5, apMedium
+	addi $s5, $s5, 49
+	j Test
 	
+apMedium : 
+	subi $s5, $s5, 1
+	bnez $s5, apHard
+	addi $s5, $s5, 50
+	jal fctMedium
+	j Test
+	
+apHard : 
+	addi $s5, $s5, 1
+	jal fctHard
+	
+Test : 
 	ori $s4, $v0, 0 #result
 	ori $v0, $0, 5 #answer
 	syscall
