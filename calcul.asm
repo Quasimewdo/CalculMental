@@ -5,7 +5,8 @@ ope : .asciiz "+-*/"
 sep : .asciiz "\n*******************************************************\n"
 sep2 : .asciiz "-------------------------------------------------------\n"
 mess1 : .asciiz "         Veuillez choisir votre niveau du jeu          \nNiveau facile : taper 1\nNiveau medium : taper 2\nNiveau difficile : taper 3\nVotre choix : "
-mess2 : .asciiz "            Vous avez 20 calculs à effectuer           \n"
+mess2 : .asciiz "            Vous avez "
+mess3 : .asciiz " calculs à effectuer           \n"
 tf : .asciiz "*             Appreciation : Très Faible              *"
 in : .asciiz "*              Appreciation : Insuffisant             *"
 pas : .asciiz "*               Appreciation : Passable               *"
@@ -70,6 +71,17 @@ fctNiveau :
 	syscall
 	
 	la $a0, mess2
+	ori $v0, $0, 4
+	syscall
+	
+	la $t1, TOTALE
+	lw $t1, 0($t1)
+	
+	ori $a0, $t1, 0
+	ori $v0, $0, 1
+	syscall
+	
+	la $a0, mess3
 	ori $v0, $0, 4
 	syscall
 	
@@ -173,6 +185,20 @@ Else :  la $a0, exc
 SUITE : la $a0, sep
 	ori $v0, $0, 4
 	syscall
+	
+	lw $ra, 0($sp)
+	lw $fp, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra	
+
+
+# -- Fonction easy : addition ou soustraction entre deux valeurs compris entre 0 et 100
+fctEasy : 
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $fp, 4($sp)
+	addiu $fp, $sp, 8
+	
 	
 	lw $ra, 0($sp)
 	lw $fp, 4($sp)
@@ -1206,6 +1232,7 @@ POUR :  slt $s3, $s1, $s2	#i < TOTALE + 1
 	subi $s5, $s5, 49
 	bnez $s5, apMedium
 	addi $s5, $s5, 49
+	jal fctEasy
 	j Test
 	
 apMedium : 
