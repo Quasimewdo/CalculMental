@@ -1,12 +1,13 @@
 .data
 
-TOTALE : .word 5
+TOTALE : .space 4
 ope : .asciiz "+-*/"
 sep : .asciiz "\n*******************************************************\n"
 sep2 : .asciiz "-------------------------------------------------------\n"
 mess1 : .asciiz "         Veuillez choisir votre niveau du jeu          \nNiveau facile : taper 1\nNiveau medium : taper 2\nNiveau difficile : taper 3\nVotre choix : "
 mess2 : .asciiz "            Vous avez "
 mess3 : .asciiz " calculs à effectuer           \n"
+mess4 : .asciiz "       Veuillez entrer le nombre de calculs que \n               vous souhaitez effectuer \n Nombre totale = "
 erreur : .asciiz "\nErreur : Veuillez taper 1, 2 ou 3\nVotre choix : "
 tf : .asciiz "*             Appreciation : Très Faible              *"
 in : .asciiz "*              Appreciation : Insuffisant             *"
@@ -33,10 +34,24 @@ resultat : .asciiz "     Resultat = "
 main :
 	subu $sp, $sp, 64
 	addiu $fp, $sp, 64
+	
+	la $a0, sep
+	ori $v0, $0, 4
+	syscall
+	
+	la $a0, mess4
+	ori $v0, $0, 4
+	syscall
+	
+    	ori $v0,$0,5      
+    	syscall
+    	
+    	la $t0, TOTALE		# Charge l'adresse de TOTALE
+    	sw $v0, 0($t0)		# Décharge le nombre de calculs à effectuer
+	
 	jal fctNiveau     	# Choix du niveau
 	ori $a0, $v0, 0 	# argument choix
     	
-	#jal fctHard
 	sb $a0, 0($sp)
 	jal fctNote
 	ori $a0, $v0, 0
@@ -121,7 +136,7 @@ fctComment :
 	sw $fp, 4($sp)
 	addiu $fp, $sp, 8
 	
-	ori $t0, $a0, 0 #note dans $t0
+	ori $t0, $a0, 0 	#note dans $t0
 	la $t1, TOTALE
 	lw $t1, 0($t1)
 	ori $t2, $0, 10 
@@ -157,7 +172,7 @@ fctComment :
 	div $t0, $t1
 	mflo $t0
 	
-	ori $t1, $0, 3  #if taux < 3
+	ori $t1, $0, 3  	#if taux < 3
 	bge $t0, $t1, Elif1
 	la $a0, tf
 	ori $v0, $0, 4
@@ -223,80 +238,80 @@ fctEasy :
 	
 	ori $a1, $0, 2
 	ori $v0, $0, 42
-	syscall        #genere opeateur 
+	syscall        		#genere opeateur 
 	# $a0 contient soit 0 ou 1
-	ori $t0, $a0, 0 # ope1
+	ori $t0, $a0, 0 	# ope1
 	
 	ori $a1, $0, 101
 	syscall
-	ori $t2, $a0, 0 # val1 comprise entre 0 et 100
+	ori $t2, $a0, 0 	# val1 comprise entre 0 et 100
 	
 	syscall
-	ori $t3, $a0, 0 # val2 comprise entre 0 et 100
+	ori $t3, $a0, 0 	# val2 comprise entre 0 et 100
 	
 	bne $t0,$0, ElifEasy 
 	# cas ou op1 == 0 -> +
-	ori $a0, $t2, 0 # $a0 contient val1
+	ori $a0, $t2, 0 	# $a0 contient val1
 	ori $v0, $0, 1
-	syscall       # affiche val1
+	syscall       		# affiche val1
 	
-	la $a0, plus # $a0 contient l'adrese de plus 
+	la $a0, plus 		# $a0 contient l'adrese de plus 
 	ori $v0, $0, 4
-	syscall      # affiche plus -> "+"
+	syscall      		# affiche plus -> "+"
 	
 	ori $a0, $t3, 0
 	ori $v0, $0, 1
-	syscall      # affiche val2
+	syscall      		# affiche val2
 	
-	add $t2, $t2, $t3 # $t2 <- resultat de l'addition
+	add $t2, $t2, $t3 	# $t2 <- resultat de l'addition
 	
 	la $a0, egal
 	ori $v0, $0, 4
-	syscall # affiche " = ?\n"
+	syscall 		# affiche " = ?\n"
 	j SUITEEasy
 
 ElifEasy: # cas ou op1 == 1 -> -
 	sub $t4, $t2, $t3 
 	blez $t4, SINON
 	# cas ou $t2 > $t3
-	ori $a0, $t2, 0 # $a0 contient val1
+	ori $a0, $t2, 0 	# $a0 contient val1
 	ori $v0, $0, 1
-	syscall       # affiche val1
+	syscall       		# affiche val1
 	
-	la $a0, moins # $a0 contient l'adrese de moins
+	la $a0, moins 		# $a0 contient l'adrese de moins
 	ori $v0, $0, 4
-	syscall      # affiche plus -> "-"
+	syscall      		# affiche plus -> "-"
 	
 	ori $a0, $t3, 0
 	ori $v0, $0, 1
-	syscall      # affiche val2
+	syscall      		# affiche val2
 	
-	sub $t2, $t2, $t3 # $t2 <- resultat de l'addition
+	sub $t2, $t2, $t3 	# $t2 <- resultat de l'addition
 	
 	la $a0, egal
 	ori $v0, $0, 4
-	syscall # affiche " = ?\n"
+	syscall 		# affiche " = ?\n"
 	j SUITEEasy
 
 SINON:
-	# cas ou $t3 >= $t2
-	ori $a0, $t3, 0 # $a0 contient val1
+	# cas ou $t3 >= $t2, on inverse les deux valeurs
+	ori $a0, $t3, 0 	# $a0 contient val2
 	ori $v0, $0, 1
-	syscall       # affiche val1
+	syscall       		# affiche val2
 	
-	la $a0, moins # $a0 contient l'adrese de moins
+	la $a0, moins 		# $a0 contient l'adrese de moins
 	ori $v0, $0, 4
-	syscall      # affiche plus -> "-"
+	syscall      		# affiche plus -> "-"
 	
 	ori $a0, $t2, 0
 	ori $v0, $0, 1
-	syscall      # affiche val2
+	syscall      		# affiche val1
 	
-	sub $t2, $t3, $t2 # $t2 <- resultat de l'addition
+	sub $t2, $t3, $t2 	# $t2 <- resultat de soustraction
 	
 	la $a0, egal
 	ori $v0, $0, 4
-	syscall # affiche " = ?\n"
+	syscall 		# affiche " = ?\n"
 	j SUITEEasy
 	
 
@@ -1322,8 +1337,8 @@ fctNote :
 
 	addi $s0, $0, 0  	#mark = 0
 	addi $s1, $0, 1 	#i = 1
-	la $s2, TOTALE
-	lw $s2, 0($s2)
+	la $s2, TOTALE		
+	lw $s2, 0($s2)		#charge le nombre totale de calcul
 	addi $s2, $s2, 1 	#$s2 = TOTALE + 1
 	ori $s5, $a0, 0		#choix
 	
