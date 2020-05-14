@@ -30,7 +30,8 @@ resultat : .asciiz "     Resultat = "
 
 .text
 
-# -- Fonction main
+#************************************************************************************************************************************
+# --- Fonction main --
 main :
 	subu $sp, $sp, 64
 	addiu $fp, $sp, 64
@@ -62,7 +63,9 @@ main :
 	ori $v0, $0, 10
 	syscall
 	
-# -- Fonction niveau pour choisir le niveau de difficulté
+#************************************************************************************************************************************
+
+# -- Fonction niveau --: pour choisir le niveau de difficulté
 fctNiveau : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -129,7 +132,9 @@ SuiteChoix :
 	addiu $sp, $sp, 8
 	jr $ra
 	
-# -- Fonction comment donne une appréciation en fonction de note obtenue
+#************************************************************************************************************************************	
+	
+# -- Fonction comment --: donne une appréciation en fonction de note obtenue
 fctComment : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -179,7 +184,7 @@ fctComment :
 	syscall
 	j SUITE
 	
-Elif1 : slti $t2, $t0, 5 #si $taux < 5, $t2 = 1
+Elif1 : slti $t2, $t0, 5 	#si $taux < 5, $t2 = 1
 	beq $t2, $zero, Elif2
 	la $a0, in  
 	ori $v0, $0, 4
@@ -228,8 +233,9 @@ SUITE : la $a0, sep
 	addiu $sp, $sp, 8
 	jr $ra	
 
+#************************************************************************************************************************************
 
-# -- Fonction easy : addition ou soustraction entre deux valeurs compris entre 0 et 100
+# -- Fonction easy --: addition ou soustraction entre deux valeurs compris entre 0 et 100 
 fctEasy : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
@@ -323,8 +329,9 @@ SUITEEasy:
 	addiu $sp, $sp, 8
 	jr $ra	
 	
+#************************************************************************************************************************************	
 	
-# -- Fonction medium : composition deux opérateurs (+, -, *) et trois valeurs
+# -- Fonction medium -- : composition deux opérateurs (+, -, *) et trois valeurs
 # Multiplication entre une valeur compris entre 0 et 100 et une valeur compris entre 0 et 10
 fctMedium : 
 	addiu $sp, $sp, -8
@@ -336,38 +343,38 @@ fctMedium :
 	ori $v0, $0, 42 
 	syscall        
 	
-	ori $t0, $a0, 0 #op1
+	ori $t0, $a0, 0 	# op1
 	# $a0 contient valeur aleatoire entre 0 et 2
 	
 	syscall         
-	ori $t1, $a0, 0 # op2
+	ori $t1, $a0, 0 	# op2
 	
 	ori $a1, $0, 101
 	syscall
-	ori $t2, $a0, 0 # val1 comprise entre 0 et 100
+	ori $t2, $a0, 0 	# val1 comprise entre 0 et 100
 	
 	subi $t1, $t1, 2 
 	beq $t1, $0, ELSEMedium # on traite a part le cas ou op2 = *
 	addi $t1, $t1, 2
 	
 	syscall
-	ori $t3, $a0, 0 # val2 comprise entre 0 et 100
+	ori $t3, $a0, 0 	# val2 comprise entre 0 et 100
 	
 	bne $t0, $0, ElifOp1  
 	# cas ou op1 == 0
-	ori $a0, $t2, 0 # $a0 contient val1
+	ori $a0, $t2, 0 	# $a0 contient val1
 	ori $v0, $0, 1
-	syscall       # affiche val1
+	syscall       		# affiche val1
 	
-	la $a0, plus # $a0 contient l'adrese de plus 
+	la $a0, plus 		# $a0 contient l'adrese de plus 
 	ori $v0, $0, 4
-	syscall      # affiche plus -> "+"
+	syscall      		# affiche plus -> "+"
 	
 	ori $a0, $t3, 0
 	ori $v0, $0, 1
-	syscall      # affiche val2
+	syscall      		# affiche val2
 	
-	add $t2, $t2, $t3 # $t2 stock result temporaire
+	add $t2, $t2, $t3 	# $t2 stock result temporaire
 	j SuiteOp2
 	
 	
@@ -395,7 +402,7 @@ ElseOp1 : # cas ou op1 == 2
 	ori $v0, $0, 42
 	syscall
 	
-	ori $t3, $a0, 0 #val2
+	ori $t3, $a0, 0 	#val2
 	
 	subi $t0, $t0, 1
 	bne $t0, $0, SuiteOp2  
@@ -421,7 +428,7 @@ SuiteOp2 :
 	ori $a1, $0, 101
 	ori $v0, $0, 42
 	syscall
-	ori $t4, $a0, 0  #val3
+	ori $t4, $a0, 0  	#val3
 	
 	bne $t1, $0, ElseOp2	
 	# cas ou op2 == 0 -> +
@@ -466,11 +473,11 @@ ELSEMedium :  # cas ou op2 == 2 -> *
 	ori $a1, $0, 101
 	ori $v0, $0, 42
 	syscall
-	ori $t3, $a0, 0 #val2
-	
+	ori $t3, $a0, 0 	#val2
+		
 	ori $a1, $0, 11
 	syscall
-	ori $t4, $a0, 0 #val3
+	ori $t4, $a0, 0 	#val3
 	
 	bne $t0, $0, ElifOp
 	
@@ -541,7 +548,7 @@ ElifOp :
 ElseOp : 
 	ori $a1, $0, 11
 	syscall
-	ori $t3, $a0, 0  #val2
+	ori $t3, $a0, 0  	#val2
 	
 	ori $a0, $t2, 0
 	ori $v0, $0, 1
@@ -583,7 +590,9 @@ SUITEMedium :
 	jr $ra	
 	
 	
-# -- Fonction hard : Composition de 3 opérateurs choisi parmi (+, -, *, /) et 4 valeurs
+#************************************************************************************************************************************	
+	
+# -- Fonction hard -- : Composition de 3 opérateurs choisi parmi (+, -, *, /) et 4 valeurs
 # Obligation d'une (et une seule) division entiere entre valeurs <= 100 et <= 10
 # Multiplication de valeurs comprises entre <= 100 et <= 10
 fctHard : 
@@ -1326,9 +1335,9 @@ SUITEHard :
 	addiu $sp, $sp, 8
 	jr $ra	
 
-
+#************************************************************************************************************************************
 	
-# -- Fonction note compte et mettre à jour la note du jeu
+# -- Fonction note --: compte et mettre à jour la note du jeu
 fctNote : 
 	addiu $sp, $sp, -8
 	sw $ra, 0($sp)
