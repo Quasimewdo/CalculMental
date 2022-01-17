@@ -1,14 +1,8 @@
-Idées:
+# Un jeu de calcul mental pour enfant
 
---> l'utilisateur pourrait choisir combien de calculs il voudrait faire
+Dans un premier temps, le programme va demander à l'enfant de choisir le nombre de calculs qu'il veut faire et le niveau de difficulté pour les calculs proposés: 
+* Easy : Mélange d'additions et soustractions entre deux nombres compris entre 0 et 100. Les soustractions sont toutes positives
+* Medium : Mélange d'additions, soustractions et multiplications entre trois nombres compris entre 0 et 100. Sauf la multiplication, c'est entre un nombre compris entre 0 et 100 et un nombre compris entre 0 et 10
+* Hard : Mélange d'additions, soustractions, multiplications avec une division entière obligatoire   
 
---> changer la note en fonction de ca
-
---> les calculs easy sont durs d'entrée à faire pour un enfant; les premiers calculs doivent etre simples et on augmente au fur et à mesure la 
-difficulté;
-Pour easy:
-calculs : 0-20
-calculs : 20 - 60
-calculs : 60 - 100
-
---> ajuster les calculs en focntion de l'age de l'utilisateur(si temps)
+Puis, une série de calculs sera proposé, et au final, une note et appréciation seront donné à l'enfant.
