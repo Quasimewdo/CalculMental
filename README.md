@@ -1,8 +1,8 @@
-# Un jeu de calcul mental pour enfant
+# A mental calculation game for children
 
-Dans un premier temps, le programme va demander à l'enfant de choisir le nombre de calculs qu'il veut faire et le niveau de difficulté pour les calculs proposés: 
-* Easy : Mélange d'additions et soustractions entre deux nombres compris entre 0 et 100. Les soustractions sont toutes positives
-* Medium : Mélange d'additions, soustractions et multiplications entre trois nombres compris entre 0 et 100. Sauf la multiplication, c'est entre un nombre compris entre 0 et 100 et un nombre compris entre 0 et 10
-* Hard : Mélange d'additions, soustractions, multiplications avec une division entière obligatoire   
+At first, the program will ask the child to choose the number of calculations he wants to do and the level of difficulty for the proposed calculations:
+* Easy: Mixture of additions and subtractions between two numbers between 0 and 100. The subtractions are all positive
+* Medium: Mixture of additions, subtractions, and multiplications between three numbers between 0 and 100. Except for multiplication, it is between a number between 0 and 100 and a number between 0 and 10
+* Hard: Mixture of additions, subtractions, multiplications with a compulsory integer division
 
-Puis, une série de calculs sera proposé, et au final, une note et appréciation seront donné à l'enfant.
+Then, a series of calculations will be proposed, and in the end, a note and appreciation will be given to the child.
